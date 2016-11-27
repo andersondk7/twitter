@@ -1,0 +1,20 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+#
+# -------------------------------------------------
+# misc functions
+# -------------------------------------------------
+#
+GET    /   controllers.TwitterController.index
+
+
+GET   /consumer/start   controllers.TwitterController.startConsuming()
+GET   /consumer/running   controllers.TwitterController.isRunning()
+GET   /consumer/pause   controllers.TwitterController.pauseConsuming()
+GET   /consumer/stop   controllers.TwitterController.stopConsuming()
+GET   /consumer/report controllers.TwitterController.report()
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                                                                                controllers.Assets.versioned(path="/public", file: Asset)
