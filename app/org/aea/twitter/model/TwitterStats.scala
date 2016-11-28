@@ -1,6 +1,10 @@
 package org.aea.twitter.model
 
+
+import org.joda.time.Duration
+import org.joda.time.format.PeriodFormatterBuilder
 import play.api.libs.json._
+
 
 /**
   * Represents the statistics of the sampled tweets
@@ -15,17 +19,30 @@ case class TwitterStats(tweets: TweetCount
                         , photos: PhotoCount
                         , hashes: HashCount
                         , emojis: EmojiCount
+                       , durationMs: Long
                         ){ }
 
 object TwitterStats {
+  private val periodFormatter = new PeriodFormatterBuilder()
+    .printZeroAlways()
+    .appendHours()
+    .appendSeparator(":")
+    .appendMinutes()
+    .appendSeparator(":")
+    .appendSeconds()
+    .toFormatter
 
   implicit val TwitterStatsWrites = new Writes[TwitterStats] {
-    override def writes(twitterStats: TwitterStats): JsValue = Json.obj(
-      "tweets" -> twitterStats.tweets
-      , "urls" -> twitterStats.urls
-      , "photo" -> twitterStats.photos
-      , "hashtags" -> twitterStats.hashes
-      , "emojis" -> twitterStats.emojis
-    )
+    override def writes(twitterStats: TwitterStats): JsValue = {
+      val period = Duration.millis(twitterStats.durationMs).toPeriod()
+        Json.obj(
+          "duration" -> periodFormatter.print(period)
+          , "tweets" -> twitterStats.tweets
+          , "urls" -> twitterStats.urls
+          , "photo" -> twitterStats.photos
+          , "hashtags" -> twitterStats.hashes
+          , "emojis" -> twitterStats.emojis
+        )
+    }
   }
 }

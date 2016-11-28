@@ -75,22 +75,4 @@ class TweetTextSpec extends FunSpec with Matchers {
       }
     }
   }
-
-  describe("emoji parsing") {
-
-    val emojiMap: Map[Byte, List[String]] = Map( 97.toByte -> List("a")
-      ,98.toByte -> List("bc", "bd")
-      , 101.toByte -> List("efg", "efgh")
-    )
-    val emojiBytes:Seq[Byte] = emojiMap.keys.toSeq
-
-    it("should extract multi char emoji") {
-      val text = "MY aefgh bd GOODNESS a"
-      val emoji :Seq[String] = TweetText.getEmoji(text, emojiMap)
-      emoji should contain("efgh")
-      emoji should contain("bd")
-      emoji should contain("a")
-      emoji.size shouldBe 4
-    }
-  }
 }

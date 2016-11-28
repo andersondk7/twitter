@@ -8,8 +8,7 @@ scalaVersion := "2.11.8"
 
 version := "1.0.0-SNAPSHOT"
 
-scalacOptions ++= Seq("-feature")
-//scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
+scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation")
 
 fork in Test := true
 
@@ -20,16 +19,6 @@ parallelExecution := true
 parallelExecution in Test := true
 
 parallelExecution in IntegrationTest := true
-
-
-// val playWs = "com.typesafe.play" %% "play-ws" % "2.5.4"
-
-// val akkaJson = "com.typesafe.akka" %% "akka-http-spray-json-experimental" % "2.4.9"
-
-// val angularjs = "org.webjars" % "angularjs" % "1.3.0-beta.2"
-
-// val webjars = "org.webjars" % "requirejs" % "2.1.11-1"
-
 
 libraryDependencies ++= Seq( cache , ws )
 

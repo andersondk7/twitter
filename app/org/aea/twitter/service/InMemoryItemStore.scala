@@ -22,9 +22,9 @@ import scala.collection.mutable.ListBuffer
   *   This is <b>Not</b> thread safe and is intended to only have one instance per actor,
   *   that is <b>not shared</b> between actors or threads
   * </p>
-  * @param maxMemoryCount
-  * @param mostPopularCount
-  * @tparam T
+  * @param maxMemoryCount maximum count of items to be stored in memory
+  * @param mostPopularCount number of 'top' items
+  * @tparam T item being stored
   */
 class InMemoryItemStore[T](maxMemoryCount: Int = MAX_SIZE, mostPopularCount: Int = MOST_POPULAR) extends ItemStore[T] {
 

@@ -11,7 +11,7 @@ import scala.concurrent.Future
   * Processing and reporting on twitter tweet samples
   * @param config configuration to connect to twitter feed
   */
-class TwitterProcessor(config: TwitterConfig) {
+class TwitterProcessor(config: TwitterConfig, emojiParser: EmojiParser) {
   import Service._
 
   private val reader: ActorRef = system.actorOf(TwitterReader.props(config, this))
@@ -19,7 +19,9 @@ class TwitterProcessor(config: TwitterConfig) {
   private val urlCounter: ActorRef = system.actorOf(TweetUrlCounter.props(), "urlCounter")
   private val photoCounter: ActorRef = system.actorOf(TweetPhotoCounter.props(), "photoCounter")
   private val hashCounter: ActorRef = system.actorOf(TweetHashCounter.props(), "hashCounter")
-  private val emojiCounter: ActorRef = system.actorOf(TweetEmojiCounter.props(), "emojiCounter")
+  private val emojiCounter: ActorRef = system.actorOf(TweetEmojiCounter.props(emojiParser), "emojiCounter")
+  private var startTimeMs = System.currentTimeMillis()
+  private var endTimeMs = startTimeMs
 
   /**
     * Process a twitter tweet sample
@@ -36,7 +38,10 @@ class TwitterProcessor(config: TwitterConfig) {
   /**
     * Start/Resume processing of twitter tweets
     */
-  def resume(): Unit = reader ! Service.Restart
+  def resume(): Unit = {
+    startTimeMs = System.currentTimeMillis()
+    reader ! Service.Restart
+  }
 
   /**
     * Pause the processing of twitter tweets
@@ -45,7 +50,10 @@ class TwitterProcessor(config: TwitterConfig) {
     *   Once paused, the processing can be resumed
     * </p>
     */
-  def pause(): Unit = reader ! Service.Pause
+  def pause(): Unit = {
+    endTimeMs = System.currentTimeMillis()
+    reader ! Service.Pause
+  }
 
   /**
     * Stop the sampling and processing of twitter tweets
@@ -72,6 +80,7 @@ class TwitterProcessor(config: TwitterConfig) {
     val photos: Future[PhotoCount] = ask(photoCounter, Service.Report).mapTo[PhotoCount]
     val hashes: Future[HashCount] = ask(hashCounter, Service.Report).mapTo[HashCount]
     val emojis: Future[EmojiCount] = ask(emojiCounter, Service.Report).mapTo[EmojiCount]
+    val running: Future[Boolean] = isRunning
 
     for {
       t <- counts
@@ -79,7 +88,15 @@ class TwitterProcessor(config: TwitterConfig) {
       p <- photos
       h <- hashes
       e <- emojis
-    } yield TwitterStats(t, u, p, h, e)
+      r <- running
+    } yield {
+      if (r) {
+        TwitterStats(t, u, p, h, e, System.currentTimeMillis() - startTimeMs)
+      }
+      else {
+        TwitterStats(t, u, p, h, e, endTimeMs - startTimeMs)
+      }
+    }
   }
 }
 

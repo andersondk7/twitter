@@ -9,7 +9,7 @@ trait ItemStore[T] {
   /**
     * Reset the store
     */
-  def reset: Unit
+  def reset(): Unit
 
   /**
     * Add an item to the store

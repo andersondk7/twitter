@@ -1,7 +1,7 @@
 package org.aea.twitter.service
 
 import akka.actor.{Actor, ActorLogging, Props}
-import org.aea.twitter.model.{HashCount, TweetText, UrlCount}
+import org.aea.twitter.model.{HashCount, TweetText}
 import akka.pattern.pipe
 
 import scala.concurrent.Future

@@ -49,9 +49,9 @@ object TweetCount {
   implicit val TweetCountWriter = new Writes[TweetCount] {
     override def writes(counts: TweetCount): JsValue = Json.obj(
       "total" -> counts.total
-      , "hour" -> counts.perHour
-      , "minute" -> counts.perMinute
-      , "second" -> counts.perSecond
+      , "hour" -> f"${counts.perHour}%2.2f"
+      , "minute" -> f"${counts.perMinute}%2.2f"
+      , "second" -> f"${counts.perSecond}%2.2f"
     )
   }
 }
